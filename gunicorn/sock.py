@@ -10,7 +10,7 @@ import socket
 import sys
 import time
 
-from gunicorn import util
+from . import util
 
 log = logging.getLogger(__name__)
 

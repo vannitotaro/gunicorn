@@ -9,10 +9,9 @@ import os
 import select
 import socket
 
-import gunicorn.http as http
-import gunicorn.http.wsgi as wsgi
-import gunicorn.util as util
-import gunicorn.workers.base as base
+from .. import http, util
+from ..http import wsgi
+from . import base
 
 class SyncWorker(base.Worker):
     
@@ -40,7 +39,7 @@ class SyncWorker(base.Worker):
                 continue
 
             except socket.error, e:
-                if e[0] not in (errno.EAGAIN, errno.ECONNABORTED):
+                if e.errno not in [errno.EAGAIN, errno.ECONNABORTED]:
                     raise
 
             # If our parent changed then we shut down.
@@ -71,7 +70,7 @@ class SyncWorker(base.Worker):
         except StopIteration:
             self.log.debug("Ignored premature client disconnection.")
         except socket.error, e:
-            if e[0] != errno.EPIPE:
+            if e.errno != errno.EPIPE:
                 self.log.exception("Error processing request.")
             else:
                 self.log.debug("Ignoring EPIPE")

@@ -9,8 +9,8 @@ import re
 import sys
 from urllib import unquote
 
-from gunicorn import SERVER_SOFTWARE
-import gunicorn.util as util
+from .. import SERVER_SOFTWARE
+from .. import util
 
 NORMALIZE_SPACE = re.compile(r'(?:\r\n)?[ \t]+')
 

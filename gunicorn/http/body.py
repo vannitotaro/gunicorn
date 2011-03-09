@@ -4,13 +4,13 @@
 # See the NOTICE for more information.
 
 import sys
-
+from ..six import b
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from ..six import StringIO 
 
-from gunicorn.http.errors import NoMoreData, ChunkMissingTerminator, \
+from .errors import NoMoreData, ChunkMissingTerminator, \
 InvalidChunkSize
 
 class ChunkedReader(object):
@@ -198,7 +198,7 @@ class Body(object):
             return sys.maxint
         return size
     
-    def read(self, size=None):
+    def _read(self, size=None):
         size = self.getsize(size)
         if size == 0:
             return ""
@@ -221,11 +221,14 @@ class Body(object):
         self.buf.truncate(0)
         self.buf.write(rest)
         return ret
+
+    def read(self, size=None):
+        return b(self._read(size=size))
     
     def readline(self, size=None):
         size = self.getsize(size)
         if size == 0:
-            return ""
+            return b("")
        
         line = self.buf.getvalue()
         idx = line.find("\n")
@@ -233,7 +236,7 @@ class Body(object):
             ret = line[:idx+1]
             self.buf.truncate(0)
             self.buf.write(line[idx+1:])
-            return ret
+            return b(ret)
             
         self.buf.truncate(0)
         ch = ""
@@ -245,11 +248,11 @@ class Body(object):
                 break
             lsize += 1
             buf.append(ch)
-        return "".join(buf)
+        return b("".join(buf))
             
     def readlines(self, size=None):
         ret = []
-        data = self.read()
+        data = self._read()
         while len(data):
             pos = data.find("\n")
             if pos < 0:
@@ -257,6 +260,6 @@ class Body(object):
                 data = ""
             else:
                 line, data = data[:pos+1], data[pos+1:]
-                ret.append(line)
-        return ret
+                ret.append(b(line))
+        return b(ret)
 

@@ -8,10 +8,10 @@ from __future__ import with_statement
 import errno
 import socket
 
-import gunicorn.http as http
-import gunicorn.http.wsgi as wsgi
-import gunicorn.util as util
-import gunicorn.workers.base as base
+from .. import http
+from ..http import wsgi
+from .. import util
+from . import base
 
 ALREADY_HANDLED = object()
 
@@ -38,10 +38,10 @@ class AsyncWorker(base.Worker):
             except StopIteration:
                 pass
         except socket.error, e:
-            if e[0] not in (errno.EPIPE, errno.ECONNRESET):
+            if e.errno not in (errno.EPIPE, errno.ECONNRESET):
                 self.log.exception("Socket error processing request.")
             else:
-                if e[0] == errno.ECONNRESET:
+                if e.errno == errno.ECONNRESET:
                     self.log.debug("Ignoring connection reset")
                 else:
                     self.log.debug("Ignoring EPIPE")

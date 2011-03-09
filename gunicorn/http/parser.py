@@ -3,8 +3,8 @@
 # This file is part of gunicorn released under the MIT license. 
 # See the NOTICE for more information.
 
-from gunicorn.http.message import Request
-from gunicorn.http.unreader import SocketUnreader, IterUnreader
+from .message import Request
+from .unreader import SocketUnreader, IterUnreader
 
 class Parser(object):
     def __init__(self, mesg_class, source):

@@ -14,7 +14,7 @@ except ImportError:
 from eventlet import hubs
 from eventlet.greenio import GreenSocket
 
-from gunicorn.workers.async import AsyncWorker
+from .async import AsyncWorker
 
 class EventletWorker(AsyncWorker):
 

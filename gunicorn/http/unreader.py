@@ -8,7 +8,7 @@ import os
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from six import StringIO
 
 # Classes that can undo reading data from
 # a given type of data source.
@@ -23,10 +23,12 @@ class Unreader(object):
     def read(self, size=None):
         if size is not None and not isinstance(size, (int, long)):
             raise TypeError("size parameter must be an int or long.")
-        if size == 0:
-            return ""
-        if size < 0:
-            size = None
+
+        if size is not None:
+            if size == 0:
+                return ""
+            if size < 0:
+                size = None
 
         self.buf.seek(0, os.SEEK_END)
 

@@ -11,13 +11,13 @@ import traceback
 try:
     from logging.config import fileConfig
 except ImportError:
-    from gunicorn.logging_config import fileConfig
+    from .logging_config import fileConfig
 
 
-from gunicorn import util
-from gunicorn.arbiter import Arbiter
-from gunicorn.config import Config
-from gunicorn import debug
+from .. import util
+from ..arbiter import Arbiter
+from ..config import Config
+from .. import debug
 
 class Application(object):
     """\
@@ -42,7 +42,7 @@ class Application(object):
     def do_load_config(self):
         try:
             self.load_config()
-        except Exception, e:
+        except Exception,  e:
             sys.stderr.write("\nError: %s\n" % str(e))
             sys.stderr.flush()
             sys.exit(1)

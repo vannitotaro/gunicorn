@@ -20,11 +20,11 @@ from gevent.pool import Pool
 from gevent.server import StreamServer
 from gevent import pywsgi, wsgi
 
-import gunicorn
-from gunicorn.workers.async import AsyncWorker
-from gunicorn.workers.base import Worker
+from .. import __version__
+from .async import AsyncWorker
+from .base import Worker
 
-VERSION = "gevent/%s gunicorn/%s" % (gevent.__version__, gunicorn.__version__)
+VERSION = "gevent/%s gunicorn/%s" % (gevent.__version__, __version__)
 
 BASE_WSGI_ENV = {
     'GATEWAY_INTERFACE': 'CGI/1.1',

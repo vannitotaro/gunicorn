@@ -12,8 +12,8 @@ import ConfigParser
 from paste.deploy import loadapp, loadwsgi
 SERVER = loadwsgi.SERVER
 
-from gunicorn.app.base import Application
-from gunicorn.config import Config
+from .base import Application
+from .. import Config
 
 class PasterBaseApplication(Application):
 

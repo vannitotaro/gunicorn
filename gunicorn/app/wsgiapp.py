@@ -6,8 +6,8 @@
 import os
 import sys
 
-from gunicorn import util
-from gunicorn.app.base import Application
+from .. import util
+from .base import Application
 
 class WSGIApplication(Application):
     
@@ -28,5 +28,5 @@ def run():
     The ``gunicorn`` command line runner for launcing Gunicorn with
     generic WSGI applications.
     """
-    from gunicorn.app.wsgiapp import WSGIApplication
+    from .wsgiapp import WSGIApplication
     WSGIApplication("%prog [OPTIONS] APP_MODULE").run()

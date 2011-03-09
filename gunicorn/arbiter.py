@@ -14,12 +14,12 @@ import sys
 import time
 import traceback
 
-from gunicorn.errors import HaltServer
-from gunicorn.pidfile import Pidfile
-from gunicorn.sock import create_socket
-from gunicorn import util
-
-from gunicorn import __version__, SERVER_SOFTWARE
+from .errors import HaltServer
+from .pidfile import Pidfile
+from .six import b
+from .sock import create_socket
+from . import util
+from . import __version__, SERVER_SOFTWARE
 
 class Arbiter(object):
     """
@@ -266,7 +266,7 @@ class Arbiter(object):
         Wake up the arbiter by writing to the PIPE
         """
         try:
-            os.write(self.PIPE[1], '.')
+            os.write(self.PIPE[1], b('.'))
         except IOError, e:
             if e.errno not in [errno.EAGAIN, errno.EINTR]:
                 raise

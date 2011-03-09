@@ -20,6 +20,8 @@ import sys
 import textwrap
 import time
 
+from .six import b, binary_type, string_types, PY3
+
 
 MAXFD = 1024
 if (hasattr(os, "devnull")):
@@ -37,6 +39,15 @@ weekdayname = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 monthname = [None,
              'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+
+WORKERS_DEFAULT = {
+        "sync": "gunicorn.workers.sync.SyncWorker",
+        "eventlet": "gunicorn.workers.geventlet.EventletWorker",
+        "gevent": "gunicorn.workers.ggevent.GeventWorker",
+        "gevent_wsgi": "gunicorn.workers.ggevent.GeventWSGIWorker",
+        "gevent_pywsgi": "gunicorn.workers.ggevent.GeventPyWSGIWorker",
+        "tornado": "gunicorn.workers.gtornado.TornadoWorker"}
 
 # Server and Date aren't technically hop-by-hop
 # headers, but they are in the purview of the
@@ -61,6 +72,7 @@ except ImportError:
         return
 
 def load_worker_class(uri):
+    print(uri)
     if uri.startswith("egg:"):
         # uses entry points
         entry_str = uri.split("egg:")[1]
@@ -72,6 +84,9 @@ def load_worker_class(uri):
 
         return pkg_resources.load_entry_point(dist, "gunicorn.workers", name)
     else:
+        if uri in WORKERS_DEFAULT:
+            uri = WORKERS_DEFAULT[uri]
+
         components = uri.split('.')
         if len(components) == 1:
             try:
@@ -119,28 +134,33 @@ def is_ipv6(addr):
     return True
         
 def parse_address(netloc, default_port=8000):
-    if netloc.startswith("unix:"):
-        return netloc.split("unix:")[1]
+
+    if not PY3:
+        if isinstance(netloc, unicode):
+            netloc = netloc.encode('utf-8')
+
+    if netloc.startswith('unix:'):
+        return netloc.split('unix:')[1]
 
     # get host
     if '[' in netloc and ']' in netloc:
         host = netloc.split(']')[0][1:].lower()
     elif ':' in netloc:
         host = netloc.split(':')[0].lower()
-    elif netloc == "":
-        host = "0.0.0.0"
+    elif netloc == '':
+        host = '0.0.0.0'
     else:
         host = netloc.lower()
     
     #get port
     netloc = netloc.split(']')[-1]
-    if ":" in netloc:
+    if ':' in netloc:
         port = netloc.split(':', 1)[1]
         if not port.isdigit():
             raise RuntimeError("%r is not a valid port number." % port)
         port = int(port)
     else:
-        port = default_port 
+        port = default_port
     return (host, port)
     
 def get_maxfd():
@@ -248,15 +268,6 @@ def http_date(timestamp=None):
             day, monthname[month], year,
             hh, mm, ss)
     return s
-    
-def to_bytestring(s):
-    """ convert to bytestring an unicode """
-    if not isinstance(s, basestring):
-        return s
-    if isinstance(s, unicode):
-        return s.encode('utf-8')
-    else:
-        return s
 
 def is_hoppish(header):
     return header.lower().strip() in hop_headers

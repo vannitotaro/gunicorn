@@ -15,8 +15,8 @@ from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado.wsgi import WSGIContainer
 
 
-from gunicorn.workers.base import Worker
-from gunicorn import __version__ as gversion
+from .base import Worker
+from .. import __version__ as gversion
 
 class TornadoWorker(Worker):
     

@@ -12,12 +12,10 @@ import sys
 import traceback
 
 
-from gunicorn import util
-from gunicorn.workers.workertmp import WorkerTmp
-
-from gunicorn.http.errors import InvalidHeader, InvalidHeaderName, \
+from .. import util
+from ..http.errors import InvalidHeader, InvalidHeaderName, \
 InvalidRequestLine, InvalidRequestMethod, InvalidHTTPVersion
-
+from .workertmp import WorkerTmp
 
 class Worker(object):
 

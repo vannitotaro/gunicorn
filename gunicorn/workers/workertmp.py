@@ -6,7 +6,7 @@
 import os
 import tempfile
 
-from gunicorn import util
+from .. import util
 
 class WorkerTmp(object):
 

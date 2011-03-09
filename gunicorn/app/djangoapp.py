@@ -7,8 +7,8 @@ import os
 import sys
 import traceback
 
-from gunicorn.config import Config
-from gunicorn.app.base import Application
+from ..config import Config
+from .base import Application
 
 ENVIRONMENT_VARIABLE = 'DJANGO_SETTINGS_MODULE'
 
@@ -74,10 +74,7 @@ class DjangoApplication(Application):
         imported in case of import-time side effects."""
         from django.core.management.base import CommandError
         from django.core.management.validation import get_validation_errors
-        try:
-            from cStringIO import StringIO
-        except ImportError:
-            from StringIO import StringIO
+        from six import StringIO
 
         s = StringIO()
         if get_validation_errors(s):
@@ -121,7 +118,8 @@ class DjangoApplicationCommand(Application):
             try:
                 execfile(self.config_file, cfg, cfg)
             except Exception:
-                print "Failed to read config file: %s" % self.config_file
+                print("Failed to read config file: %s" %
+                        self.config_file)
                 traceback.print_exc()
                 sys.exit(1)
         

@@ -9,10 +9,10 @@ import urlparse
 try:
     from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from ..six import StringIO 
 
-from gunicorn.http.body import ChunkedReader, LengthReader, EOFReader, Body
-from gunicorn.http.errors import InvalidHeader, InvalidHeaderName, NoMoreData, \
+from .body import ChunkedReader, LengthReader, EOFReader, Body
+from .errors import InvalidHeader, InvalidHeaderName, NoMoreData, \
 InvalidRequestLine, InvalidRequestMethod, InvalidHTTPVersion
 
 class Message(object):

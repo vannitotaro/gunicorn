@@ -12,9 +12,11 @@ import pwd
 import textwrap
 import types
 
-from gunicorn import __version__
-from gunicorn.errors import ConfigError
-from gunicorn import util
+from six import string_types
+
+from . import __version__
+from .errors import ConfigError
+from . import util
 
 KNOWN_SETTINGS = []
 
@@ -84,7 +86,7 @@ class Config(object):
     @property
     def address(self):
         bind = self.settings['bind'].get()
-        return util.parse_address(util.to_bytestring(bind))
+        return util.parse_address(bind)
         
     @property
     def uid(self):
@@ -192,7 +194,7 @@ def validate_pos_int(val):
 def validate_string(val):
     if val is None:
         return None
-    if not isinstance(val, basestring):
+    if not isinstance(val, string_types):
         raise TypeError("Not a string: %s" % val)
     return val.strip()
 
