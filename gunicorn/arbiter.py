@@ -21,6 +21,8 @@ from .sock import create_socket
 from . import util
 from . import __version__, SERVER_SOFTWARE
 
+
+
 class Arbiter(object):
     """
     Arbiter maintain the workers processes alive. It launches or
@@ -293,7 +295,7 @@ class Arbiter(object):
             while os.read(self.PIPE[0], 1):
                 pass
         except select.error, e:
-            if e[0] not in (errno.EAGAIN, errno.EINTR):
+            if e.args[0] not in (errno.EAGAIN, errno.EINTR):
                 raise
         except OSError, e:
             if e.errno not in [errno.EAGAIN, errno.EINTR]:
