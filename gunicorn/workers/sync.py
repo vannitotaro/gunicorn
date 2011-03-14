@@ -53,9 +53,9 @@ class SyncWorker(base.Worker):
                 if ret[0]:
                     continue
             except select.error, e:
-                if e[0] == errno.EINTR:
+                if e.args[0] == errno.EINTR:
                     continue
-                if e[0] == errno.EBADF:
+                if e.args[0] == errno.EBADF:
                     if self.nr < 0:
                         continue
                     else:
