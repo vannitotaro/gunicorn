@@ -231,8 +231,13 @@ else:
         return s
     def u(s):
         return unicode(s, "unicode_escape")
-    import StringIO
-    StringIO = BytesIO = StringIO.StringIO
+    try:
+        import cStringIO
+        StringIO = BytesIO = cStringIO.StringIO
+    except ImportError:
+        import StringIO
+        StringIO = BytesIO = StringIO.StringIO
+
 _add_doc(b, """Byte literal""")
 _add_doc(u, """Text literal""")
 

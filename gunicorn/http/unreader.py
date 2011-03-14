@@ -5,17 +5,14 @@
 
 import os
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from six import StringIO
+from ..six import BytesIO
 
 # Classes that can undo reading data from
 # a given type of data source.
 
 class Unreader(object):
     def __init__(self):
-        self.buf = StringIO()
+        self.buf = BytesIO()
     
     def chunk(self):
         raise NotImplementedError()

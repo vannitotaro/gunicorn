@@ -11,10 +11,12 @@ from urllib import unquote
 
 from .. import SERVER_SOFTWARE
 from .. import util
+from ..six import string_types, b, binary_type
 
 NORMALIZE_SPACE = re.compile(r'(?:\r\n)?[ \t]+')
 
 log = logging.getLogger(__name__)
+
 
 def create(req, sock, client, server, cfg):
     resp = Response(req, sock)
@@ -160,7 +162,7 @@ class Response(object):
 
     def process_headers(self, headers):
         for name, value in headers:
-            assert isinstance(name, basestring), "%r is not a string" % name
+            assert isinstance(name, string_types), "%r is not a string" % name
             lname = name.lower().strip()
             if lname == "content-length":
                 self.clength = int(value)
@@ -205,12 +207,14 @@ class Response(object):
             return
         tosend = self.default_headers()
         tosend.extend(["%s: %s\r\n" % (n, v) for n, v in self.headers])
-        util.write(self.sock, "%s\r\n" % "".join(tosend))
+
+        flat_headers =  b("%s\r\n" % "".join(tosend))
+        util.write(self.sock, flat_headers)
         self.headers_sent = True
 
     def write(self, arg):
         self.send_headers()
-        assert isinstance(arg, basestring), "%r is not a string." % arg
+        assert isinstance(arg, binary_type), "%r is not a bytestring." % arg
 
         arglen = len(arg)
         tosend = arglen

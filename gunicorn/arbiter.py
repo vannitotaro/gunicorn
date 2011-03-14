@@ -293,7 +293,7 @@ class Arbiter(object):
             while os.read(self.PIPE[0], 1):
                 pass
         except select.error, e:
-            if e[0] not in [errno.EAGAIN, errno.EINTR]:
+            if e[0] not in (errno.EAGAIN, errno.EINTR):
                 raise
         except OSError, e:
             if e.errno not in [errno.EAGAIN, errno.EINTR]:

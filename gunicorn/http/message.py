@@ -6,14 +6,11 @@
 import re
 import urlparse
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from ..six import StringIO 
-
+from ..six import b, BytesIO
 from .body import ChunkedReader, LengthReader, EOFReader, Body
 from .errors import InvalidHeader, InvalidHeaderName, NoMoreData, \
 InvalidRequestLine, InvalidRequestMethod, InvalidHTTPVersion
+
 
 class Message(object):
     def __init__(self, unreader):
@@ -36,7 +33,8 @@ class Message(object):
         headers = []
 
         # Split lines on \r\n keeping the \r\n on each line
-        lines = [line + "\r\n" for line in data.split("\r\n")]
+        lines = [line.decode('iso-8859-1') + "\r\n" for line in
+                data.split(b("\r\n"))]
 
         # Parse headers into key/value pairs paying attention
         # to continuation lines.
@@ -121,29 +119,29 @@ class Request(Message):
         buf.write(data)
     
     def parse(self, unreader):
-        buf = StringIO()
+        buf = BytesIO()
 
         self.get_data(unreader, buf, stop=True)
         
         # Request line
-        idx = buf.getvalue().find("\r\n")
+        idx = buf.getvalue().find(b("\r\n"))
         while idx < 0:
             self.get_data(unreader, buf)
-            idx = buf.getvalue().find("\r\n")
+            idx = buf.getvalue().find(b("\r\n"))
         self.parse_request_line(buf.getvalue()[:idx])
         rest = buf.getvalue()[idx+2:] # Skip \r\n
-        buf = StringIO()
+        buf = BytesIO()
         buf.write(rest)
        
         
         # Headers
-        idx = buf.getvalue().find("\r\n\r\n")
+        idx = buf.getvalue().find(b("\r\n\r\n"))
 
         done = buf.getvalue()[:2] == "\r\n"
         while idx < 0 and not done:
             self.get_data(unreader, buf)
-            idx = buf.getvalue().find("\r\n\r\n")
-            done = buf.getvalue()[:2] == "\r\n"
+            idx = buf.getvalue().find(b("\r\n\r\n"))
+            done = buf.getvalue()[:2] == b("\r\n")
              
         if done:
             self.unreader.unread(buf.getvalue()[2:])
@@ -152,11 +150,11 @@ class Request(Message):
         self.headers = self.parse_headers(buf.getvalue()[:idx])
 
         ret = buf.getvalue()[idx+4:]
-        buf = StringIO()
+        buf = BytesIO()
         return ret
     
     def parse_request_line(self, line):
-        bits = line.split(None, 2)
+        bits = line.decode('iso-8859-1').split(None, 2)
         if len(bits) != 3:
             raise InvalidRequestLine(line)
 
